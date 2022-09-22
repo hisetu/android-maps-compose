@@ -44,7 +44,7 @@ subprojects { project ->
     apply plugin: 'com.hiya.jacoco-android'
     apply plugin: 'maven-publish'
     apply plugin: 'org.jetbrains.dokka'
-    apply plugin: 'signing'
+//    apply plugin: 'signing'
 
     // Code coverage
     jacoco {
@@ -117,10 +117,10 @@ subprojects { project ->
             }
         }
     }
-
-    signing {
-        sign publishing.publications.aar
-    }
+//
+//    signing {
+//        sign publishing.publications.aar
+//    }
 }
 
 task clean(type: Delete) {

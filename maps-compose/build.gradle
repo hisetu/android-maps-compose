@@ -1,7 +1,13 @@
 plugins {
     id 'kotlin-android'
     id 'kotlin-parcelize'
+    id 'maven-publish'
 }
+
+//task generateSourcesJar(type: Jar){
+//    from android.sourceSets.main.java.srcDirs
+//    classifier 'sources'
+//}
 
 android {
     namespace "com.google.maps.android.compose"
@@ -33,6 +39,11 @@ android {
         freeCompilerArgs += '-Xexplicit-api=strict'
         freeCompilerArgs += '-Xopt-in=kotlin.RequiresOptIn'
     }
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
@@ -48,4 +59,31 @@ dependencies {
     androidTestImplementation platform(libs.androidx.compose.bom)
     androidTestImplementation libs.androidx.test.espresso
     androidTestImplementation libs.androidx.test.junit.ktx
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'com.my-company'
+            artifactId = 'my-library'
+            version = '1.0'
+
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = 'myrepo'
+            url = "${project.buildDir}/repo"
+        }
+    }
+}
+
+tasks.register('generateRepo', Zip) {
+    def publishTask = tasks.named('publishReleasePublicationToMyrepoRepository')
+    from publishTask.map { it.getRepository().getUrl() }
+    into 'mylibrary'
+    archiveFileName.set('mylibrary.zip')
 }
